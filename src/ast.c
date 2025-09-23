@@ -56,6 +56,8 @@ ast *create_identifier(char id) {
   return node;
 }
 
+/// Print the tree in a pretty way :)
+/// This will print in a nested style
 void pprint_tree(ast *node, unsigned int depth) {
   if (node->type == LAMBDA || node->type == VAR) {
     printf("%*s%s [%c]\n", depth*2, "", type_to_str(node->type), node->id);
@@ -72,6 +74,7 @@ void pprint_tree(ast *node, unsigned int depth) {
   }
 }
 
+/// Recursively free all the memory associated with the AST
 void del_ast(ast *node) {
   if (node->left) {
     del_ast(node->left);

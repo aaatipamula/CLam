@@ -4,8 +4,7 @@
 
 # Compiler and Flags
 CC := gcc
-CFLAGS := -Wall -Wextra -Isrc -Ibuild -DDEBUG_BISON
-# CFLAGS := -Wall -Wextra -Isrc -Ibuild -DDEBUG_FLEX
+CFLAGS := -Wall -Wextra -Isrc -Ibuild
 LDFLAGS := -lm
 
 # Directories
@@ -75,5 +74,6 @@ $(TARGET): $(BIN_DIR) $(C_OBJS)
 clean:
 	rm -rf $(BUILD_DIR) $(BIN_DIR) $(SRC_DIR)/parser.tab.h
 
+# Run test suite
 test: $(TARGET)
-	$(TARGET) ./test.lam
+	./test.sh $(TARGET)

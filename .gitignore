@@ -1,0 +1,6 @@
+# Compiled files
+*.o
+
+# bin and build folders
+bin/*
+build/*

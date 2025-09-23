@@ -6,4 +6,4 @@ Why write this? Mostly just because, but also its a great opportunity for me to 
 
 # Running
 
-You will need bison, `flex`, `make`, and `g++` installed. Once done the project will be located in `bin/clam`.
+You will need bison, `flex`, `make`, and `gcc` installed. Once done the project will be located in `bin/clam`.
