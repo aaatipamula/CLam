@@ -34,7 +34,7 @@ ast *lookup_in_scope(scope *curr, char id) {
 
 scope *add_to_scope(Arena *arena, scope *parent, char id, ast *val) {
   scope *new_entry;
-  new_entry = arena_alloc(arena, sizeof(scope));
+  new_entry = arena_alloc(arena);
   if (!new_entry) ERR("CLam: malloc failed.");
 
   new_entry->id = id;

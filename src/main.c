@@ -58,7 +58,7 @@ int main(int argc, char **argv) {
       }
       tok = yylex();
     }
-    goto FIN; // PLEASE DON'T DO THIS ACTUALLY
+    goto FIN; // Cleanup
   }
 
   /// Produce parser output
@@ -75,30 +75,34 @@ int main(int argc, char **argv) {
 
     ret_val = parse_result;
 
-    goto FIN; // THIS IS NOT GOOD CODE DO NOT DO THIS
+    goto FIN; // Cleanup
   }
 
   /// Interpret the program
   int parse_result = yyparse();
   if (parse_result == 0) {
     Arena env;
-    arena_init(&env, sizeof(scope) * 4); // TODO: Find a better way to estimate the initial size of arena
+    arena_init(&env, sizeof(scope));
 
     ast *val = interp(&env, program, NULL);
-    print_node(val);
-    printf("\n");
+    if (val) {
+      print_node(val);
+      printf("\n");
+    } else {
+      ERR("Invalid expression.\n"); /// TODO: Throw better errors while interpreting
+    }
 
     // Free memory
     del_ast(program);
     arena_free(&env);
 
   } else {
-    ERR("Invalid expression.\n");
+    ERR("Invalid syntax.\n"); /// TODO: throw better syntax errors
   }
 
-  FIN: /// DON'T DO THIS LMAO
 
-  /// Close any open files
+FIN: /// Close any open files
+
   if (fp) {
     fclose(fp);
     fp = NULL;
