@@ -2,35 +2,41 @@
 #include <stdlib.h>
 
 #include "ast.h"
-#include "parser.tab.h" // lsp error lol
+#include "parser.tab.h" // lsp error if not symlinked
+#include "err.h"
 
+/// Convert a token to a string
 char *type_to_str(int type) {
   switch (type) {
     case LAMBDA: return "LAMBDA";
-    case APP: return "APP";
-    case VAR: return "VAR";
-    case LPAR: return "LPAR";
-    case RPAR: return "RPAR";
-    case DOT: return "DOT";
+    case APP:    return "APP";
+    case VAR:    return "VAR";
+    case LPAR:   return "LPAR";
+    case RPAR:   return "RPAR";
+    case DOT:    return "DOT";
   }
   return "unknown";
 }
 
-void check_malloc(void *ptr) {
-  if (!ptr) fprintf(stderr, "CLam: malloc failed.");
+/// Check the status of malloc (private)
+static void check_malloc(void *ptr) {
+  if (!ptr) ERR("CLam: malloc failed.");
 }
 
-ast *create_ast_node(int type) {
+// Create a generic ast node (private)
+static ast *create_ast_node(int type) {
   ast *node = (ast *)malloc(sizeof(ast));
   check_malloc(node);
 
   node->id = '_';
-  node->left = node->right = NULL;
+  node->fval = node->left = node->right = NULL;
+  node->curr_env = NULL;
   node->type = type;
 
   return node;
 }
 
+/// Create a lambda node
 ast *create_lambda(char id, ast *body) {
   ast *node = create_ast_node(LAMBDA);
 
@@ -40,6 +46,7 @@ ast *create_lambda(char id, ast *body) {
   return node;
 }
 
+/// Create an app node
 ast *create_app(ast *left, ast *right) {
   ast *node = create_ast_node(APP);
 
@@ -48,6 +55,8 @@ ast *create_app(ast *left, ast *right) {
 
   return node;
 }
+
+/// Create an identifier node
 ast *create_identifier(char id) {
   ast *node = create_ast_node(VAR);
 
@@ -56,9 +65,37 @@ ast *create_identifier(char id) {
   return node;
 }
 
+/// Print a single node (and its children)
+void print_node(ast *node) {
+  if (!node) ERR("No value.");
+
+  switch (node->type) {
+    case LAMBDA:
+      printf("(\\%c.", node->id);
+      print_node(node->left);
+      printf(")");
+      break;
+    case VAR:
+      if (node->fval) {
+        print_node(node->fval);
+      } else {
+        printf("%c", node->id);
+      }
+      break;
+    case APP:
+      printf("(");
+      print_node(node->left);
+      printf(" ");
+      print_node(node->right);
+      printf(")");
+      break;
+  }
+}
+
 /// Print the tree in a pretty way :)
-/// This will print in a nested style
 void pprint_tree(ast *node, unsigned int depth) {
+  if (!node) ERR("No node.");
+
   if (node->type == LAMBDA || node->type == VAR) {
     printf("%*s%s [%c]\n", depth*2, "", type_to_str(node->type), node->id);
   } else {
@@ -76,6 +113,8 @@ void pprint_tree(ast *node, unsigned int depth) {
 
 /// Recursively free all the memory associated with the AST
 void del_ast(ast *node) {
+  if (!node) return;
+
   if (node->left) {
     del_ast(node->left);
   }

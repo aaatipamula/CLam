@@ -3,6 +3,7 @@
 
 #include "ast.h"
 #include "err.h"
+#include "interp.h"
 #include "parser.tab.h"
 
 extern ast *program; // Defined in lambda.y
@@ -36,13 +37,13 @@ int main(int argc, char **argv) {
     fp = fopen(argv[optind], "r");
     if (fp) yyin = fp;
   } else {
-    ERR("Could not find file %s", argv[optind]);
+    ERR("Could not find file %s\n", argv[optind]);
     return 1;
   }
 
   /// Prevent trying to lex and parse at the same time
   if (lex && parse) {
-    ERR("Cannot output parse and lex at the same time.");
+    ERR("Cannot output parse and lex at the same time.\n");
     return 1;
   }
 
@@ -57,6 +58,7 @@ int main(int argc, char **argv) {
       }
       tok = yylex();
     }
+    goto FIN; // PLEASE DON'T DO THIS ACTUALLY
   }
 
   /// Produce parser output
@@ -65,7 +67,6 @@ int main(int argc, char **argv) {
 
     // Parse the input
     if (parse_result == 0) {
-      printf("\nProgram:\n");
       pprint_tree(program, 0);
       del_ast(program);
     } else {
@@ -73,7 +74,29 @@ int main(int argc, char **argv) {
     }
 
     ret_val = parse_result;
+
+    goto FIN; // THIS IS NOT GOOD CODE DO NOT DO THIS
   }
+
+  /// Interpret the program
+  int parse_result = yyparse();
+  if (parse_result == 0) {
+    Arena env;
+    arena_init(&env, sizeof(scope) * 4); // TODO: Find a better way to estimate the initial size of arena
+
+    ast *val = interp(&env, program, NULL);
+    print_node(val);
+    printf("\n");
+
+    // Free memory
+    del_ast(program);
+    arena_free(&env);
+
+  } else {
+    ERR("Invalid expression.\n");
+  }
+
+  FIN: /// DON'T DO THIS LMAO
 
   /// Close any open files
   if (fp) {
