@@ -17,6 +17,7 @@ ast* program;
 }
 
 %token LPAR RPAR DOT
+%token CLOSURE /* This is an ephemeral token which only appears when interpreting */
 %token <token> LAMBDA
 %token <id> VAR
 

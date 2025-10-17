@@ -6,7 +6,7 @@
 #include "err.h"
 
 /// Convert a token to a string
-char *type_to_str(int type) {
+const char *type_to_str(int type) {
   switch (type) {
     case LAMBDA: return "LAMBDA";
     case APP:    return "APP";
@@ -75,6 +75,7 @@ void print_node(ast *node) {
       print_node(node->left);
       printf(")");
       break;
+
     case VAR:
       if (node->fval) {
         print_node(node->fval);
@@ -82,11 +83,18 @@ void print_node(ast *node) {
         printf("%c", node->id);
       }
       break;
+
     case APP:
       printf("(");
       print_node(node->left);
       printf(" ");
       print_node(node->right);
+      printf(")");
+      break;
+
+    case CLOSURE:
+      printf("(\\%c.", node->id);
+      print_node(node->left);
       printf(")");
       break;
   }

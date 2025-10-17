@@ -13,14 +13,16 @@ ast *interp(Arena *env, ast *node, scope *curr_scope) {
 
   switch (node->type) {
     case APP:
+      /// Evaluate the left and right branches in the current context
       left_val = interp(env, node->left, curr_scope);
       right_val = interp(env, node->right, curr_scope);
 
-      if (left_val->type != LAMBDA) {
-        ERR("Invalid operator to app");
+      if (left_val->type != CLOSURE) {
+        ERR("Invalid operator to application");
         return NULL;
       }
 
+      /// and then the body of the closure within its own environment
       curr_scope = left_val->curr_env;
       curr_scope = add_to_scope(env, curr_scope, left_val->id, right_val);
       final_val = interp(env, left_val->left, curr_scope);
@@ -30,6 +32,7 @@ ast *interp(Arena *env, ast *node, scope *curr_scope) {
     case LAMBDA:
       /// Add the current environment to the lambda to create a closure
       node->curr_env = curr_scope;
+      node->type = CLOSURE;
       return node;
 
     case VAR:

@@ -13,7 +13,7 @@ struct _lambda_ast {
   scope *curr_env;
 };
 
-char *type_to_str(int type);
+const char *type_to_str(int type);
 
 ast *create_lambda(char id, ast *body);
 ast *create_app(ast *left, ast *right);
