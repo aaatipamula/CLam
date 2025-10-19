@@ -4,7 +4,7 @@
 
 # Compiler and Flags
 CC := gcc
-CFLAGS := -Wall -Wextra -Wpedantic -Wwrite-strings -Wswitch-enum -Wundef -Wformat=2 -Wstrict-overflow=5 -Isrc -Ibuild
+CFLAGS := -g -Wall -Wextra -Wpedantic -Wwrite-strings -Wswitch-enum -Wundef -Wformat=2 -Wstrict-overflow=5 -Isrc -Ibuild
 LDFLAGS := -lm
 
 # Directories

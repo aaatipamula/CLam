@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <stdlib.h>
 
 #include "ast.h"
@@ -66,36 +65,40 @@ ast *create_identifier(char id) {
 }
 
 /// Print a single node (and its children)
-void print_node(ast *node) {
+void print_node(ast *node, FILE *out) {
   if (!node) ERR("No value.");
+
+  if (!out) {
+    out = stdout;
+  }
 
   switch (node->type) {
     case LAMBDA:
-      printf("(\\%c.", node->id);
-      print_node(node->left);
-      printf(")");
+      fprintf(out, "(\\%c.", node->id);
+      print_node(node->left, out);
+      fprintf(out, ")");
       break;
 
     case VAR:
       if (node->fval) {
-        print_node(node->fval);
+        print_node(node->fval, out);
       } else {
-        printf("%c", node->id);
+        fprintf(out, "%c", node->id);
       }
       break;
 
     case APP:
-      printf("(");
-      print_node(node->left);
-      printf(" ");
-      print_node(node->right);
-      printf(")");
+      fprintf(out, "(");
+      print_node(node->left, out);
+      fprintf(out, " ");
+      print_node(node->right, out);
+      fprintf(out, ")");
       break;
 
     case CLOSURE:
-      printf("(\\%c.", node->id);
-      print_node(node->left);
-      printf(")");
+      fprintf(out, "(\\%c.", node->id);
+      print_node(node->left, out);
+      fprintf(out, ")");
       break;
   }
 }

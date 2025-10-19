@@ -1,17 +1,41 @@
-#include <stdio.h>
 #include <stdlib.h>
 
 #include "scope.h"
 #include "arena.h"
 #include "err.h"
 
+void print_scope_dfa(Arena *a, FILE *out) {
+  if (!out) {
+    out = stdout;
+  }
 
-static void print_scope(scope *s) {
+  fprintf(out, "digraph ScopeTree {\n  rankdir=\"BT\";\n");
+
+  /// Loop through the arena and print each scope node
+  for (size_t off = 0; off < a->used; off += a->data_size) {
+    scope *s = (scope*)(a->data + off);
+    fprintf(out, "  node%p [label=\"%c->", (void *)s, s->id);
+    print_node(s->val, out);
+    fprintf(out, "\"];\n");
+    if (s->parent) {
+      fprintf(out, "  node%p -> node%p;\n", (void *)s, (void *)s->parent);
+    }
+  }
+
+  fprintf(out, "}\n");
+}
+
+static void print_scope(scope *s, FILE *out) {
   scope *next = s;
+
+  if (!out) {
+    out = stdout;
+  }
+
   while (next) {
-    printf("%c->", next->id);
-    print_node(next->val);
-    printf(";\n");
+    fprintf(out, "%c->", next->id);
+    print_node(next->val, out);
+    fprintf(out, ";\n");
     next = next->parent;
   }
   printf("\n");
@@ -27,7 +51,7 @@ ast *lookup_in_scope(scope *curr, char id) {
   }
 
   ERR("[%c] does not exist in scope:\n", id);
-  print_scope(curr);
+  print_scope(curr, NULL);
 
   return NULL;
 }
