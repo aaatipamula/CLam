@@ -22,8 +22,6 @@ int main(int argc, char **argv) {
   FILE* fp = NULL;
   FILE* scope_graph = NULL;
 
-  int optind = 0;
-
   /// Define long options
   struct option long_opts[] = {
       {"lex",        no_argument, 0,  'l'},
@@ -68,9 +66,7 @@ int main(int argc, char **argv) {
 
   /// The scope graph can only be generated if interpreting finishes
   if ((lex || parse) && scope_graph) {
-    ERR("Cannot only parse/lex and generate scope graph.");
-    ret_val = 1;
-    goto FIN;
+    WARN("Cannot only parse/lex and generate scope graph.");
   }
 
   /// Produce token output

@@ -18,7 +18,7 @@
 [.]   { return DOT; }
 [a-zA-Z1-9] { yylval.id = yytext[0]; return VAR; }
 <<EOF>> { return EOF; }
-.     { ERR("Invalid character [%s] found.", yytext); }
+.     { ERR("Invalid character [%s] found.\n", yytext); }
 
 %%
 

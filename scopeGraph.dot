@@ -1,6 +1,0 @@
-digraph ScopeTree {
-  rankdir="BT";
-  node0x557304216910 [label="x->(\t.t)"];
-  node0x557304216928 [label="y->(\f.f)"];
-  node0x557304216928 -> node0x557304216910;
-}
